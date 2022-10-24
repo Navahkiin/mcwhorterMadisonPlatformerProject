@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerBehaviour : MonoBehaviour
 {
@@ -12,18 +13,44 @@ public class PlayerBehaviour : MonoBehaviour
     private Transform foot;
     [SerializeField]
     private LayerMask ground;
+    [SerializeField]
+    private LayerMask shadow;
 
     public float JumpSpeed = 5f;
     [SerializeField]
     private Rigidbody2D player;
 
+    // Player health & taking damage
+    private int maxHealth = 100;
+    private int playerHealth;
+    public Slider Health;
 
-    void Start()
+    // Flip character when turning
+    bool facingRight = true;
+
+    // Shadow character control
+    public bool notShadow;
+    public GameObject Player;
+
+    public GameObject Attack;
+
+    // Player sprites
+    public SpriteRenderer SR;
+    public Sprite PlayerNormal;
+    public Sprite PlayerShadow;
+
+    // Key and door unlocking
+    public Transform KeyFollowPoint;
+    public KeyBehaviour FollowingKey;
+
+    private void Start()
     {
-        
+        notShadow = true;
+
+        playerHealth = maxHealth;
+        SetMaxHealth(maxHealth);
     }
 
-    // Update is called once per frame
     void Update()
     {
         // Horizontal movement
@@ -31,24 +58,104 @@ public class PlayerBehaviour : MonoBehaviour
         transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
 
         // Vertical movement
-        if (Input.GetButtonDown("Jump") && CheckGround())
+        if (Input.GetButtonDown("Jump") && CheckGround() && notShadow)
         {
             player.velocity = new Vector2(player.velocity.x, JumpSpeed);
             Debug.Log("Jump Working");
         }
+
+        if (Input.GetButtonDown("Jump") && CheckShadowGround() && !notShadow)
+        {
+            player.velocity = new Vector2(player.velocity.x, JumpSpeed);
+            Debug.Log("Shadow Jump Working");
+        }
+
+        // Shadow transformation
+        if (Input.GetButtonDown("LShift"))
+        {
+            if (notShadow == true)
+            {
+                Player.layer = LayerMask.NameToLayer("PlayerShadow");
+                SR.sprite = PlayerShadow;
+                notShadow = false;
+                Debug.Log("Shadow form!");
+                // Disables attacking when in shadow form
+                Attack.SetActive(false);
+                // For now, only the color of the sprite will change. There will be actual sprites and animations later on :)
+
+            }
+            else
+            {
+                Player.layer = LayerMask.NameToLayer("Default");
+                SR.sprite = PlayerNormal;
+                notShadow = true;
+                Debug.Log("Normal form!");
+                Attack.SetActive(true);
+            }
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (Input.GetAxisRaw("Horizontal") > 0 && !facingRight)
+        {
+            Flip();
+        }
+        if (Input.GetAxisRaw("Horizontal") < 0 && facingRight)
+        {
+            Flip();
+        }
+    }
+
+    void Flip() // Flips character when turning
+    {
+        Vector3 currentScale = gameObject.transform.localScale;
+        currentScale.x *= -1;
+        gameObject.transform.localScale = currentScale;
+        
+        facingRight = !facingRight;
     }
 
     private bool CheckGround()
     {
         RaycastHit2D hit;
-
         hit = Physics2D.Raycast(foot.position, Vector2.down, 0.2f, ground);
+        return hit;
+    }
 
+    private bool CheckShadowGround()
+    {
+        RaycastHit2D hit;
+        hit = Physics2D.Raycast(foot.position, Vector2.down, 0.2f, shadow);
         return hit;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Collision Detected");
+        if (collision.gameObject.tag == "Enemy")
+        {
+            TakeDamage(20);
+        }
+    }
+
+    void TakeDamage(int damage)
+    {
+        playerHealth -= damage;
+        SetHealth(playerHealth);
+        if (playerHealth <= 0)
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        }
+    }
+
+    public void SetMaxHealth(int health)
+    {
+        Health.maxValue = health;
+        Health.value = health;
+    }
+
+    public void SetHealth(int health)
+    {
+        Health.value = health;
     }
 }
