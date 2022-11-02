@@ -11,7 +11,7 @@ public class CameraBehaviour : MonoBehaviour
     [SerializeField]
     private Transform player;
 
-    void Update()
+    void FixedUpdate()
     {
         Vector3 playerPosition = player.position + offset;
         // SmoothDamp changes a vector over time! :)

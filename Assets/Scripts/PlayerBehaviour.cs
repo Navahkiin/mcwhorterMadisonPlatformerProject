@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerBehaviour : MonoBehaviour
 {
@@ -46,6 +47,7 @@ public class PlayerBehaviour : MonoBehaviour
     private void Start()
     {
         notShadow = true;
+        Player.tag = "Player";
 
         playerHealth = maxHealth;
         SetMaxHealth(maxHealth);
@@ -53,10 +55,6 @@ public class PlayerBehaviour : MonoBehaviour
 
     void Update()
     {
-        // Horizontal movement
-        var movement = Input.GetAxisRaw("Horizontal");
-        transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
-
         // Vertical movement
         if (Input.GetButtonDown("Jump") && CheckGround() && notShadow)
         {
@@ -76,6 +74,7 @@ public class PlayerBehaviour : MonoBehaviour
             if (notShadow == true)
             {
                 Player.layer = LayerMask.NameToLayer("PlayerShadow");
+                Player.tag = "PlayerShadow";
                 SR.sprite = PlayerShadow;
                 notShadow = false;
                 Debug.Log("Shadow form!");
@@ -87,6 +86,7 @@ public class PlayerBehaviour : MonoBehaviour
             else
             {
                 Player.layer = LayerMask.NameToLayer("Default");
+                Player.tag = "Player";
                 SR.sprite = PlayerNormal;
                 notShadow = true;
                 Debug.Log("Normal form!");
@@ -97,6 +97,10 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Horizontal movement
+        var movement = Input.GetAxisRaw("Horizontal");
+        transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
+
         if (Input.GetAxisRaw("Horizontal") > 0 && !facingRight)
         {
             Flip();
@@ -144,7 +148,7 @@ public class PlayerBehaviour : MonoBehaviour
         SetHealth(playerHealth);
         if (playerHealth <= 0)
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 
