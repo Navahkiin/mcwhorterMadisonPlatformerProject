@@ -8,6 +8,7 @@ public class PlayerBehaviour : MonoBehaviour
 {
     // Horizontal movement
     public float MovementSpeed = 1f;
+    public Animator Animator;
 
     // Vertical movement
     [SerializeField]
@@ -47,6 +48,7 @@ public class PlayerBehaviour : MonoBehaviour
     private void Start()
     {
         notShadow = true;
+        Animator.SetBool("NotShadow", true);
         Player.tag = "Player";
 
         playerHealth = maxHealth;
@@ -80,7 +82,7 @@ public class PlayerBehaviour : MonoBehaviour
                 Debug.Log("Shadow form!");
                 // Disables attacking when in shadow form
                 Attack.SetActive(false);
-                // For now, only the color of the sprite will change. There will be actual sprites and animations later on :)
+                Animator.SetBool("NotShadow", false);
 
             }
             else
@@ -91,6 +93,7 @@ public class PlayerBehaviour : MonoBehaviour
                 notShadow = true;
                 Debug.Log("Normal form!");
                 Attack.SetActive(true);
+                Animator.SetBool("NotShadow", true);
             }
         }
     }
@@ -109,6 +112,8 @@ public class PlayerBehaviour : MonoBehaviour
         {
             Flip();
         }
+
+        Animator.SetFloat("Speed", Mathf.Abs(movement));
     }
 
     void Flip() // Flips character when turning
