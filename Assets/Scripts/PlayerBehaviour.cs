@@ -45,6 +45,11 @@ public class PlayerBehaviour : MonoBehaviour
     public Transform KeyFollowPoint;
     public KeyBehaviour FollowingKey;
 
+    // References to the canvas and win/lose screens
+    public GameObject Canvas;
+    public GameObject WinScreen;
+    public GameObject LoseScreen;
+
     private void Start()
     {
         notShadow = true;
@@ -121,7 +126,7 @@ public class PlayerBehaviour : MonoBehaviour
         Vector3 currentScale = gameObject.transform.localScale;
         currentScale.x *= -1;
         gameObject.transform.localScale = currentScale;
-        
+
         facingRight = !facingRight;
     }
 
@@ -146,14 +151,14 @@ public class PlayerBehaviour : MonoBehaviour
             TakeDamage(20);
         }
     }
-
     void TakeDamage(int damage)
     {
         playerHealth -= damage;
         SetHealth(playerHealth);
+        Animator.SetTrigger("Hit");
         if (playerHealth <= 0)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            LoseScreen.SetActive(true);
         }
     }
 
