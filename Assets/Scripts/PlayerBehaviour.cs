@@ -17,10 +17,15 @@ public class PlayerBehaviour : MonoBehaviour
     private LayerMask ground;
     [SerializeField]
     private LayerMask shadow;
+    private Vector2 jumpCheck = new Vector2(0.7f, 0.01f);
 
     public float JumpSpeed = 5f;
     [SerializeField]
     private Rigidbody2D player;
+
+    // Interactable actions
+    private Vector2 boxSize = new Vector2(3f, 3f);
+    public GameObject InteractIcon;
 
     // Player health & taking damage
     private int maxHealth = 100;
@@ -33,8 +38,6 @@ public class PlayerBehaviour : MonoBehaviour
     // Shadow character control
     public bool notShadow;
     public GameObject Player;
-
-    public GameObject Attack;
 
     // Player sprites
     public SpriteRenderer SR;
@@ -52,6 +55,9 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void Start()
     {
+        Time.timeScale = 1;
+        InteractIcon.SetActive(false);
+
         notShadow = true;
         Animator.SetBool("NotShadow", true);
         Player.tag = "Player";
@@ -75,6 +81,11 @@ public class PlayerBehaviour : MonoBehaviour
             Debug.Log("Shadow Jump Working");
         }
 
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            CheckIfInteractable();
+        }
+
         // Shadow transformation
         if (Input.GetButtonDown("LShift"))
         {
@@ -85,8 +96,6 @@ public class PlayerBehaviour : MonoBehaviour
                 SR.sprite = PlayerShadow;
                 notShadow = false;
                 Debug.Log("Shadow form!");
-                // Disables attacking when in shadow form
-                Attack.SetActive(false);
                 Animator.SetBool("NotShadow", false);
 
             }
@@ -97,7 +106,6 @@ public class PlayerBehaviour : MonoBehaviour
                 SR.sprite = PlayerNormal;
                 notShadow = true;
                 Debug.Log("Normal form!");
-                Attack.SetActive(true);
                 Animator.SetBool("NotShadow", true);
             }
         }
@@ -133,24 +141,52 @@ public class PlayerBehaviour : MonoBehaviour
     private bool CheckGround()
     {
         RaycastHit2D hit;
-        hit = Physics2D.Raycast(foot.position, Vector2.down, 0.2f, ground);
+        hit = Physics2D.BoxCast(foot.position, jumpCheck, 0f, Vector2.down, 0.2f, ground);
         return hit;
     }
 
     private bool CheckShadowGround()
     {
         RaycastHit2D hit;
-        hit = Physics2D.Raycast(foot.position, Vector2.down, 0.2f, shadow);
+        hit = Physics2D.BoxCast(foot.position, jumpCheck, 0f, Vector2.down, 0.2f, shadow);
         return hit;
+    }
+
+    void CheckIfInteractable()
+    {
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(transform.position,boxSize, 0, Vector2.zero);
+
+        if (hits.Length > 0)
+        {
+            foreach (RaycastHit2D rc in hits)
+            {
+                if (rc.transform.GetComponent<Interactable>())
+                {
+                    rc.transform.GetComponent<Interactable>().Interact();
+                    return;
+                }
+            }
+        }
+    }
+
+    public void OpenInteractableIcon()
+    {
+        InteractIcon.SetActive(true);
+    }
+
+    public void CloseInteractableIcon()
+    {
+        InteractIcon.SetActive(false);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Enemy")
+        if (collision.gameObject.tag == "Obstacle")
         {
             TakeDamage(20);
         }
     }
+
     void TakeDamage(int damage)
     {
         playerHealth -= damage;
@@ -159,6 +195,7 @@ public class PlayerBehaviour : MonoBehaviour
         if (playerHealth <= 0)
         {
             LoseScreen.SetActive(true);
+            Time.timeScale = 0;
         }
     }
 

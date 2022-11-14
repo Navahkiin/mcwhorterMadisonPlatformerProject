@@ -8,6 +8,7 @@ TagManager:
   - Box
   - Ground
   - PlayerShadow
+  - Obstacle
   layers:
   - Default
   - TransparentFX
