@@ -9,6 +9,10 @@ TagManager:
   - Ground
   - PlayerShadow
   - Obstacle
+  - CorruptedKing
+  - CorruptedKingRange
+  - Wall
+  - Chandelier
   layers:
   - Default
   - TransparentFX

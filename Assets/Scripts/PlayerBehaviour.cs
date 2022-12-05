@@ -31,6 +31,7 @@ public class PlayerBehaviour : MonoBehaviour
     private int maxHealth = 100;
     private int playerHealth;
     public Slider Health;
+    private BossBehaviour bossBehaviour;
 
     // Flip character when turning
     bool facingRight = true;
@@ -185,9 +186,14 @@ public class PlayerBehaviour : MonoBehaviour
         {
             TakeDamage(20);
         }
+
+        if (collision.gameObject.tag == "CorruptedKing")
+        {
+            TakeDamage(20);
+        }
     }
 
-    void TakeDamage(int damage)
+    public void TakeDamage(int damage)
     {
         playerHealth -= damage;
         SetHealth(playerHealth);
