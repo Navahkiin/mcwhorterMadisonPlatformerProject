@@ -4,10 +4,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class MainMenuController : MonoBehaviour
 {
+
+    public Animator Animator;
     // Start is called before the first frame update
     void Start()
     {
         Application.targetFrameRate = 60;
+        Animator.SetTrigger("GameStart");
     }
 
     // Update is called once per frame

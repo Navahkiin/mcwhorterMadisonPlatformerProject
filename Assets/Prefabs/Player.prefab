@@ -173,6 +173,8 @@ MonoBehaviour:
   Canvas: {fileID: 0}
   WinScreen: {fileID: 0}
   LoseScreen: {fileID: 0}
+  Source: {fileID: 0}
+  Jump: {fileID: 8300000, guid: f66f3ecb48c1d3c40b4ea2a793bb4e00, type: 3}
 --- !u!95 &569195742358194249
 Animator:
   serializedVersion: 4

@@ -54,6 +54,10 @@ public class PlayerBehaviour : MonoBehaviour
     public GameObject WinScreen;
     public GameObject LoseScreen;
 
+    // Sound references
+    public AudioSource Source;
+    public AudioClip Jump;
+
     private void Start()
     {
         Time.timeScale = 1;
@@ -74,12 +78,14 @@ public class PlayerBehaviour : MonoBehaviour
         {
             player.velocity = new Vector2(player.velocity.x, JumpSpeed);
             Debug.Log("Jump Working");
+            Source.PlayOneShot(Jump);
         }
 
         if (Input.GetButtonDown("Jump") && CheckShadowGround() && !notShadow)
         {
             player.velocity = new Vector2(player.velocity.x, JumpSpeed);
             Debug.Log("Shadow Jump Working");
+            Source.PlayOneShot(Jump);
         }
 
         if (Input.GetKeyDown(KeyCode.E))

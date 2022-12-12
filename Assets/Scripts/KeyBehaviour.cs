@@ -8,6 +8,10 @@ public class KeyBehaviour : MonoBehaviour
     public float FollowSpeed = 3;
     public Transform FollowTarget;
 
+    // Sound references
+    public AudioSource Source;
+    public AudioClip KeyPickUp;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -34,6 +38,7 @@ public class KeyBehaviour : MonoBehaviour
                 FollowTarget = Player.KeyFollowPoint;
                 isFollowing = true;
                 Player.FollowingKey = this;
+                Source.PlayOneShot(KeyPickUp);
             }
         }
     }
